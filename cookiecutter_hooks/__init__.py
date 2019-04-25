@@ -26,12 +26,14 @@ def safe_delete(path):
 def post_gen_project():
     paths_to_delete = []
     for path in [os.path.join(x[0], y) for x in os.walk('.') for y in x[2]]:
+        if path.endswith('.rename'):
+            continue
         if test_empty(path):
             paths_to_delete.append(path)
-    if path.endswith('.delete'):
-        if not test_empty(path):
-            paths_to_delete.append(path.replace('.delete', ''))
-            paths_to_delete.append(path)
+        if path.endswith('.delete'):
+            if not test_empty(path):
+                paths_to_delete.append(path.replace('.delete', ''))
+                paths_to_delete.append(path)
     for path in paths_to_delete:
         if os.path.basename(path) in ['__init__.py']:
             continue
