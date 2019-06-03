@@ -61,7 +61,7 @@ def post_gen_project():
     for path in paths_to_delete:
         safe_delete(path)
     for path in [os.path.join(x[0], y) for x in os.walk('.') for y in x[2]]:
-        if all([not path.endswith(x) for x in ('.py', '.conf', '.ini', 
+        if all([not path.endswith(x) for x in ('.py', '.conf', '.ini',
                                                '.js', '.html', '.json')]):
             continue
         with open(path, 'r') as f:
