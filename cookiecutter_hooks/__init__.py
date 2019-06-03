@@ -1,5 +1,7 @@
 import os
 import shutil
+import autopep8
+import re
 
 
 def test_empty(path):
@@ -58,3 +60,17 @@ def post_gen_project():
         shutil.move(source, target)
     for path in paths_to_delete:
         safe_delete(path)
+    for path in [os.path.join(x[0], y) for x in os.walk('.') for y in x[2]]:
+        if all([not path.endswith(x) for x in ('.py', '.conf', '.ini',
+                                               '.js', '.html', '.json')]):
+            continue
+        with open(path, 'r') as f:
+            # reduce multi blank lines to a single one
+            content = f.read()
+            content = re.sub(r'\n\s*\n', '\n\n', content)
+            content = re.sub(r'^\ns*\n', '\n', content)
+            # conform python code to pep8
+            if path.endswith('.py'):
+                content = autopep8.fix_code(f.read())
+        with open(path, 'w') as f:
+            f.write(content)
