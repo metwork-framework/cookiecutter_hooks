@@ -71,6 +71,6 @@ def post_gen_project():
             content = re.sub(r'^\ns*\n', '\n', content)
             # conform python code to pep8
             if path.endswith('.py'):
-                content = autopep8.fix_code(f.read())
+                content = autopep8.fix_code(content)
         with open(path, 'w') as f:
             f.write(content)
