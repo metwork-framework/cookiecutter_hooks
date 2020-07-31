@@ -10,5 +10,9 @@ setup(
     version="0.0.1",
     license="BSD",
     packages=find_packages(),
-    install_requires=install_requires
+    install_requires=install_requires,
+    entry_points={
+        'console_scripts':
+        ['post_gen_project = cookiecutter_hooks:post_gen_project']
+    },
 )

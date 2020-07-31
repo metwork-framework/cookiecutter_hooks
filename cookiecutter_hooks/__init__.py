@@ -25,13 +25,18 @@ def safe_delete(path):
         pass
 
 
-def post_gen_project():
+def post_gen_project(
+        autopep8_python=True,
+        delete_empty_files=True,
+        reduce_multi_blank_extensions=['.py', '.conf', '.ini', '.js',
+                                       '.html', '.json']):
     paths_to_delete = []
     for path in [os.path.join(x[0], y) for x in os.walk('.') for y in x[2]]:
         if path.endswith('.rename'):
             continue
-        if test_empty(path):
-            paths_to_delete.append(path)
+        if delete_empty_files:
+            if test_empty(path):
+                paths_to_delete.append(path)
         if path.endswith('.delete'):
             if not test_empty(path):
                 paths_to_delete.append(path.replace('.delete', ''))
@@ -60,17 +65,30 @@ def post_gen_project():
         shutil.move(source, target)
     for path in paths_to_delete:
         safe_delete(path)
-    for path in [os.path.join(x[0], y) for x in os.walk('.') for y in x[2]]:
-        if all([not path.endswith(x) for x in ('.py', '.conf', '.ini',
-                                               '.js', '.html', '.json')]):
-            continue
-        with open(path, 'r') as f:
-            # reduce multi blank lines to a single one
-            content = f.read()
-            content = re.sub(r'\n\s*\n', '\n\n', content)
-            content = re.sub(r'^\ns*\n', '\n', content)
-            # conform python code to pep8
-            if path.endswith('.py'):
-                content = autopep8.fix_code(content)
-        with open(path, 'w') as f:
-            f.write(content)
+    if len(reduce_multi_blank_extensions) > 0:
+        for path in [os.path.join(x[0], y)
+                     for x in os.walk('.') for y in x[2]]:
+            if all([not path.endswith(x)
+                    for x in reduce_multi_blank_extensions]):
+                continue
+            with open(path, 'r') as f:
+                # reduce multi blank lines to a single one
+                content = f.read()
+                content = re.sub(r'\n\s*\n', '\n\n', content)
+                content = re.sub(r'^\ns*\n', '\n', content)
+            with open(path, 'w') as f:
+                f.write(content)
+    if autopep8_python:
+        for path in [os.path.join(x[0], y)
+                     for x in os.walk('.') for y in x[2]]:
+            if not path.endswith(".py"):
+                continue
+            with open(path, 'r') as f:
+                content = f.read()
+            content = autopep8.fix_code(content)
+            with open(path, 'w') as f:
+                f.write(content)
+
+
+if __name__ == "__main__":
+    post_gen_project()
