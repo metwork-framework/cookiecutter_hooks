@@ -42,7 +42,7 @@ def post_gen_project(
                 paths_to_delete.append(path.replace('.delete', ''))
                 paths_to_delete.append(path)
     for path in paths_to_delete:
-        if os.path.basename(path) in ['__init__.py']:
+        if os.path.basename(path) in ['__init__.py', 'allow_binary_packages']:
             continue
         safe_delete(path)
     paths_to_rename = []
